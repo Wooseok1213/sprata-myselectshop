@@ -1,6 +1,5 @@
 package com.sparta.myselectshop.service;
 
-import com.sparta.myselectshop.dto.FolderReponseDto;
 import com.sparta.myselectshop.dto.FolderResponseDto;
 import com.sparta.myselectshop.entity.Folder;
 import com.sparta.myselectshop.entity.User;
