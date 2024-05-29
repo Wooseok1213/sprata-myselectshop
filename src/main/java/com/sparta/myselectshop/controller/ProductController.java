@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,11 +42,21 @@ public class ProductController {
             @RequestParam("sortBy") String sortBy,
             @RequestParam("isAsc") Boolean isAsc,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return productService.getProducts(userDetails.getUser(), page-1, size, sortBy, isAsc);
+        return productService.getProducts(userDetails.getUser(), page - 1, size, sortBy, isAsc);
     }
 
     @GetMapping("/admin/products")
-    public List<ProductResponseDto> getAllProducts(){
+    public List<ProductResponseDto> getAllProducts() {
         return productService.getAllproducts();
+    }
+
+    @PostMapping("/products/{productID}/folder")
+    public void addFolder
+            (@PathVariable Long productId,
+             @RequestParam Long folderId,
+             @AuthenticationPrincipal UserDetailsImpl userDetails
+            ) {
+        productService.addFolder(productId, folderId, userDetails.getUser());
+
     }
 }
