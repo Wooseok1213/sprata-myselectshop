@@ -10,10 +10,7 @@ import com.sparta.myselectshop.repository.ProductFolderRepository;
 import com.sparta.myselectshop.repository.ProductRepository;
 import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -100,11 +97,11 @@ public class ProductService {
         );
 
         if (!product.getUser().getId().equals(user.getId())
-        || !folder.getUser().getId().equals(user.getId())) {
+                || !folder.getUser().getId().equals(user.getId())) {
             throw new IllegalArgumentException("회원님의 관심상품이 아니거나, 회원님의 폴더가 아닙니다");
         }
 
-        Optional<ProductFolder> overLapFolder = productRepository.findByproductAndFolder(product, folder);
+        Optional<ProductFolder> overLapFolder = productFolderRepository.findByproductAndFolder(product, folder);
 
         if (overLapFolder.isPresent()) {
             throw new IllegalArgumentException("중복된 폴더입니다.");
@@ -112,5 +109,17 @@ public class ProductService {
 
         productFolderRepository.save(new ProductFolder(product, folder));
 
+    }
+
+    public Page<ProductResponseDto> getProductsFolder(Long folderId, int page, int size, String sortBy, Boolean isAsc, User user) {
+
+        Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<Product> productList = productRepository.findAllByUserAndProductFolderList_FolderId(user, folderId, pageable);
+
+        Page<ProductResponseDto> responseDtoList = productList.map(ProductResponseDto::new);
+        return responseDtoList;
     }
 }
