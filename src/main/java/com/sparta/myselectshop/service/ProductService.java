@@ -30,6 +30,7 @@ public class ProductService {
         Product product = productRepository.save(new Product(requesetDto, user));
         return new ProductResponseDto(product);
     }
+
     @Transactional
     public ProductResponseDto updateProduct(Long id, ProductMypriceRequestDto requesetDto) {
         int myprice = requesetDto.getMyprice();
@@ -45,6 +46,7 @@ public class ProductService {
         return new ProductResponseDto(product);
     }
 
+    @Transactional(readOnly = true)
     public Page<ProductResponseDto> getProducts(User user, int page, int size, String sortBy, Boolean isAsc) {
         Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
         Sort sort = Sort.by(direction, sortBy);
@@ -56,10 +58,11 @@ public class ProductService {
 
         if (userRoleEnum == UserRoleEnum.USER) {
             productList = productRepository.findAllByUser(user, pageable);
-        }else {
+        } else {
             productList = productRepository.findAll(pageable);
 
-        }    return productList.map(ProductResponseDto::new);
+        }
+        return productList.map(ProductResponseDto::new);
 
     }
 
